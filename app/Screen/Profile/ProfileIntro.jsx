@@ -1,0 +1,42 @@
+import { View, Text, Image } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useUser } from '@clerk/clerk-expo'
+import Colors from '../../Utils/Colors';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
+
+
+export default function ProfileIntro({ postList }) {
+  const { user } = useUser();
+  const [totalPostlikes, setTotalPostLikes] = useState(0);
+  useEffect(() => {
+    postList && calculateLikes();
+  }, [postList])
+  const calculateLikes = () => {
+    let totalLikes = 0;
+    postList.forEach(element => {
+      // console.log(element.VideoLikes?.length)
+      totalLikes = totalLikes + element.VideoLikes?.length;
+    });
+    setTotalPostLikes(totalLikes);
+  }
+  return (
+    <View style={{ marginTop: 10 }}>
+      <Text style={{ fontFamily: 'outfit-bold', fontSize: 24, marginLeft: 20 }}>Profile</Text>
+      <View style={{ marginTop: 20, alignItems: 'center' }}>
+        <Image source={{ uri: user.imageUrl }} style={{ width: 90, height: 90, borderRadius: 99 }} />
+        <Text style={{ fontFamily: 'outfit-medium', fontSize: 20, marginTop: 10 }}>{user?.fullName}</Text>
+        <Text style={{ fontFamily: 'outfit', fontSize: 17, marginTop: 10, color: Colors.BACKGROUND_TRANSP }}>{user?.primaryEmailAddress?.emailAddress}</Text>
+      </View>
+      <View style={{ marginTop: 20, display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <FontAwesome name="video-camera" size={24} color="black" />
+          <Text style={{ fontFamily: 'outfit-bold', fontSize: 20 }}>{postList.length} Post</Text>
+        </View>
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <AntDesign name="like1" size={24} color="black" />
+          <Text style={{ fontFamily: 'outfit-bold', fontSize: 20 }}>{totalPostlikes} Likes</Text>
+        </View>
+      </View>
+    </View>
+  )
+}
